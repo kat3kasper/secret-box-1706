@@ -9,6 +9,7 @@ describe('Server', function() {
       if (err) { return done(err); }
       done();
     });
+    this.request = request.defaults({baseUrl: 'http://localhost:9876'})
   });
 
   after(function() {
@@ -21,8 +22,22 @@ describe('Server', function() {
 
   describe('GET /', function() {
     it('should return a 200', function(done){
-      request.get('http://localhost:9876', function(error, response) {
+      this.request.get('/', function(error, response) {
+        if (error) {done(error)}
         assert.equal(response.statusCode, 200)
+        done()
+      })
+    })
+
+    it('should have a body with the name of the app', function(done) {
+      var title = app.locals.title;
+
+      this.request.get('/', function(error, response) {
+        if (error) {done(error)}
+
+        assert(response.body.includes(title),
+          `"${response.body}" does not include "${title}"`)
+
         done()
       })
     })
