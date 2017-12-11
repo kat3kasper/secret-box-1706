@@ -72,4 +72,31 @@ describe('Server', function() {
       })
     })
   })
+
+  describe('POST /api/secrets', function() {
+    beforeEach(function() {
+      app.locals.secrets = {}
+    })
+
+    it('should not return a 404', function(done) {
+      this.request.post('/api/secrets', function(error, response) {
+        if (error) { done(error) }
+        assert.notEqual(response.statusCode, 404)
+        done()
+      })
+    })
+
+    it('should receive and store data', function(done) {
+      var newSecret = { message: 'I like pineapples on my pizza!'}
+
+      this.request.post('/api/secrets', {form: newSecret}, function(error, response) {
+        if(error) {done(error)}
+
+        var secretCount = Object.keys(app.locals.secrets).length
+
+        assert.equal(secretCount, 1, `Expected 1 secret, found ${secretCount}`)
+        done()
+      })
+    })
+  })
 })
