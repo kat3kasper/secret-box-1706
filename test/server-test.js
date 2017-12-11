@@ -42,4 +42,34 @@ describe('Server', function() {
       })
     })
   });
+
+  describe('GET /api/secrets/:id', function() {
+    beforeEach(function() {
+      app.locals.secrets = {wowowo: 'I am a banana'}
+    })
+
+    it('should return a 404', function(done) {
+      this.request.get('/api/secret/notThere', function(error, response) {
+        if (error) {done(error)}
+        assert.equal(response.statusCode, 404)
+        done()
+      })
+    })
+
+    it('should have the id and the message', function(done) {
+      var id = 'wowowo'
+      var message = app.locals.secrets[id]
+
+      this.request.get(`/api/secrets/${id}`, function(error, response) {
+        if (error) {done(error)}
+
+        assert(response.body.includes(id),
+           `"${response.body}" does not include "${id}".`);
+        assert(response.body.includes(message),
+           `"${response.body}" does not include "${message}".`);
+
+        done()
+      })
+    })
+  })
 })
